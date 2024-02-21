@@ -219,7 +219,6 @@ static bool pop(device_handle_t device, int sectors_per_block, block_no_t data_b
             }
         }
 
-        /* FIXME:这里要是释放失败了，其实是很尴尬的事情，破坏了完整性 */
         success = data_block_free(device, sectors_per_block, data_blocks_stack, *p_first, p_used_block_count);
         if (!success) {
             return false;

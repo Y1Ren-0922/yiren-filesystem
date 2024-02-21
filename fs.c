@@ -105,7 +105,6 @@ static inline struct dev_fsctrl_s* path_to_ctrl(const char* path) {
 
 #define FS_MAX_FILE_FD UINT16_MAX
 
-/* FIXME:似乎C语言全局数组默认就是NULL? 记不清楚了 */
 struct {
     fs_file_t* file;
     char drive_letter;
@@ -435,7 +434,6 @@ int fs_chdir(const char* path)
     return FS_SUCCESS;
 }
 
-/* FIXME: 目前对于带盘符的路径的一些约定有些混乱，先暂时这样吧 */
 char* fs_abs_path(const char* path, char* abs_path, size_t size)
 {
     if (path[1] != ':') {

@@ -71,7 +71,6 @@ static bool yiren_file_init(yiren_file_t* file, device_handle_t device, yiren_fi
         }
 
         success =  dir_add(device, fs, dir_no, name, file_no);
-        /* FIXME: 这里失败了应该要把新建立的文件删除 */
         if (!success) {
             return false;
         }
@@ -158,7 +157,6 @@ bool yiren_mkdir(device_handle_t device, yiren_filesystem_t* fs, const char* pat
     }
 
     success =  dir_add(device, fs, dir_no, name, file_no);
-    /* FIXME: 这里失败了应该要把新建立的文件删除 */
     if (!success) {
         return false;
     }
@@ -251,14 +249,12 @@ bool yiren_link(device_handle_t device, yiren_filesystem_t* fs, const char* src_
     inode_no_t dir_no;
     success = dir_roottree_locate(device, fs, dir_path, &exist, &dir_no);
     if (!success || !exist) {
-        /* 这个要是失败了，很尴尬的事情 */
         base_file_unref(device, &fs->sb, no);
         return false;
     }
 
     success = dir_add(device, fs, dir_no, name, no);
     if (!success) {
-        /* 这个要是失败了，很尴尬的事情 */
         base_file_unref(device, &fs->sb, no);
         return false;
     }
@@ -313,7 +309,6 @@ bool yiren_unlink(device_handle_t device, yiren_filesystem_t* fs, const char* pa
 
 bool yiren_symlink(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path)
 {
-    /* FIXME: 暂时先这样判断文件是否存在 */
     if (!yiren_stat(device, fs, src_path, NULL) || !yiren_stat(device, fs, src_path, NULL)) {
         return false;
     }
@@ -462,7 +457,6 @@ bool yiren_closedir(yiren_dir_t* dir)
     return success;
 }
 
-/*************************************/
 
 static bool dir_locate(device_handle_t device, yiren_filesystem_t* fs, inode_no_t dir, const char* name, bool* p_exist, inode_no_t* p_no)
 {
@@ -521,7 +515,7 @@ static bool dir_add(device_handle_t device, yiren_filesystem_t* fs, inode_no_t d
 
     base_file_seek(&base_file, base_file_size(&base_file));
 
-    /* FIXME: 这里写入不完整的话，应该把文件截断到之前的状态 */
+    /* 写入不完整的话，应该把文件截断到之前的状态 */
     int count = base_file_write(&base_file, buf, DIR_ITEM_SIZE);
     if (count != DIR_ITEM_SIZE) {
         base_file_close(&base_file);
@@ -571,7 +565,6 @@ static bool dir_del(device_handle_t device, yiren_filesystem_t* fs, inode_no_t d
                 return false;
             }
 
-            /* FIXME: 这里要是失败了，又是个很尴尬的问题，会导致这个目录里出现两个相同的项 */
             bool success = base_file_truncate(&base_file, base_file_size(&base_file) - DIR_ITEM_SIZE);
             if (!success) {
                 base_file_close(&base_file);
@@ -589,7 +582,6 @@ static bool dir_del(device_handle_t device, yiren_filesystem_t* fs, inode_no_t d
 
 
 
-/*************************************/
 
 /* 简单实现，考虑了内存布局但是未考虑字节序 */
 static void dir_item_load_from_bin(struct dir_item_s* item, const char* bin)
