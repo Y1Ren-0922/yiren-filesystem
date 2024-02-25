@@ -152,8 +152,8 @@ int cmd_cat(int argc, char* argv[])
         return -1;
     }
 
-    if (st.st_mode != FS_S_IFREG) {
-        printf("不是普通文件！\n");
+    if (st.st_mode == FS_S_IFDIR) {
+        printf("%s是目录！\n", argv[0]);
         return -1;
     }
 
