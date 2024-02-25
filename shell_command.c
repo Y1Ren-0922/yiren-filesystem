@@ -159,19 +159,44 @@ int cmd_cat(int argc, char* argv[])
 
     char buf[1024];
     int size = 1024;
-
+    char *sym_path_buf = (char *)malloc(st.st_size);
+    memset(sym_path_buf, '\0', st.st_size);
 
     int fd = fs_open(argv[0]);
     while (true) {
         int count = fs_read(fd, buf, size - 1);
         buf[count] = '\0';
-        printf("%s", buf);
+
+        strcat(sym_path_buf, buf);
+
         if (count != size - 1) {
             break;
         }
     }
-    printf("\n");
+    if (st.st_mode == FS_S_IFREG) {
+        printf("%s\n", sym_path_buf);
+    } else if (st.st_mode == FS_S_IFLNK) {
+        struct fs_stat link_st;
+        ret = fs_stat(sym_path_buf, &link_st);
+        if(ret != FS_SUCCESS) {
+            printf("文件不存在！\n");
+            return -1;
+        }
+
+        int sym_fd = fs_open(sym_path_buf);
+        while (true) {
+            int count = fs_read(sym_fd, buf, size - 1);
+            buf[count] = '\0';
+            printf("%s", buf);
+            if (count != size - 1)
+                break;
+        }
+        printf("\n");
+    }
+
+
     fs_close(fd);
+    free(sym_path_buf);
 
     return 0;
 }

@@ -309,9 +309,6 @@ bool yiren_unlink(device_handle_t device, yiren_filesystem_t* fs, const char* pa
 
 bool yiren_symlink(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path)
 {
-    if (!yiren_stat(device, fs, src_path, NULL)) {
-        return false;
-    }
 
     yiren_file_t* file = yiren_open(device, fs, new_path);
     if (file == NULL) {
@@ -319,11 +316,13 @@ bool yiren_symlink(device_handle_t device, yiren_filesystem_t* fs, const char* s
     }
 
 
-    int write_size = strlen(new_path) + 1;
-    int count = yiren_write(file, new_path, write_size);
+    int write_size = strlen(src_path) + 1;
+    int count = yiren_write(file, src_path, write_size);
     if (count != write_size) {
         return false;
     }
+
+    file->base_file.mem_inode->inode.mode = MODE_SYMBOL_LINK;
 
     yiren_close(file);
 

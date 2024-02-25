@@ -232,9 +232,8 @@ int fs_link(const char* src_path, const char* new_path)
     }
 
     if ((path_drive_letter(src_abspath)) != path_drive_letter(new_abspath)) {
-        return FS_ERROR;
-    }
-
+	return FS_ERROR;
+		        }
     struct dev_fsctrl_s* ctrl = path_to_ctrl(src_abspath);
     if (ctrl->opfuncs->link(ctrl->device, ctrl->fs_ctrl, path_remain(src_abspath), path_remain(new_abspath))) {
         return FS_SUCCESS;
@@ -270,12 +269,8 @@ int fs_symlink(const char* src_path, const char* new_path)
         return FS_ERROR;
     }
 
-    if ((path_drive_letter(src_abspath)) != path_drive_letter(new_abspath)) {
-        return FS_ERROR;
-    }
-
     struct dev_fsctrl_s* ctrl = path_to_ctrl(src_abspath);
-    if (ctrl->opfuncs->symlink(ctrl->device, ctrl->fs_ctrl, path_remain(src_abspath), path_remain(new_abspath))) {
+    if (ctrl->opfuncs->symlink(ctrl->device, ctrl->fs_ctrl, src_path, path_remain(new_abspath))) {
         return FS_SUCCESS;
     } else {
         return FS_ERROR;
