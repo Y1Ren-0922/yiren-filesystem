@@ -309,7 +309,7 @@ bool yiren_unlink(device_handle_t device, yiren_filesystem_t* fs, const char* pa
 
 bool yiren_symlink(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path)
 {
-    if (!yiren_stat(device, fs, src_path, NULL) || !yiren_stat(device, fs, src_path, NULL)) {
+    if (!yiren_stat(device, fs, src_path, NULL)) {
         return false;
     }
 
