@@ -21,7 +21,9 @@ fs_off_t yiren_lseek(yiren_file_t* file, fs_off_t off, int where);
 bool yiren_mkdir(device_handle_t device, yiren_filesystem_t* fs, const char* path);
 bool yiren_rmdir(device_handle_t device, yiren_filesystem_t* fs, const char* path);
 
+bool yiren_cp(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path);
 bool yiren_mv(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path);
+
 bool yiren_link(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path);
 bool yiren_unlink(device_handle_t device, yiren_filesystem_t* fs, const char* path);
 

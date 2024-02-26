@@ -291,42 +291,10 @@ int cmd_cp(int argc, char* argv[])
     int targetFile;
     if(argc == 2)
     {
-        sourceFile = fs_open(argv[0]);
-        if (sourceFile == FS_ERROR)
-        {
-            /* code */
-            printf("操作失败！\n");
+        if (fs_cp(argv[0], argv[1]) == FS_ERROR) {
+            printf("操作失败! \n");
             return 0;
         }
-
-        char abspath[FS_MAX_FILE_PATH];
-        fs_abs_path(argv[1], abspath, FS_MAX_FILE_PATH);
-
-        if (!(isalpha(abspath[0]) && abspath[1] == ':')) {
-            return FS_ERROR;
-        }
-
-        if (strlen(abspath + 3) == 0) {
-            path_basename(argv[0], abspath, FS_MAX_FILE_PATH);
-        }
-
-        targetFile = fs_open(argv[1]);
-        if (targetFile == FS_ERROR)
-        {
-            /* code */
-            printf("操作失败！\n");
-            return 0;
-        }
-        char buf[1024];
-        int c = fs_read(sourceFile, buf, sizeof(buf) - 1);
-        while(c > 0)
-        {
-            fs_write(targetFile, buf, c);
-            c = fs_read(sourceFile, buf, sizeof(buf) - 1);
-        }
-
-        fs_close(sourceFile);
-        fs_close(targetFile);
     }
     else
     {

@@ -209,6 +209,49 @@ bool yiren_rmdir(device_handle_t device, yiren_filesystem_t* fs, const char* pat
     }
 }
 
+bool yiren_cp(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path) {
+    /* src文件所在的inode */
+    bool exist;
+    inode_no_t no;
+    bool success = dir_roottree_locate(device, fs, src_path, &exist, &no);
+    if (!success || !exist) {
+        return false;
+    }
+
+    yiren_file_t *src_file = yiren_open(device, fs, src_path);
+    if (src_file == NULL) {
+        return false;
+    }
+
+    char dir_path[FS_MAX_FILE_PATH];
+    char name[FILE_MAX_NAME];
+    path_dirname(new_path, dir_path);
+    path_basename(new_path, name, FILE_MAX_NAME);
+
+    if (strlen(name) == 0) {
+        path_basename(src_path, name, FILE_MAX_NAME);
+        strcat(dir_path, name);
+    }
+    
+    yiren_file_t* file = yiren_open(device, fs, dir_path);
+    if (file == NULL) {
+        return false;
+    }
+
+    char buf[1024];
+    int c = yiren_read(src_file, buf, sizeof(buf) - 1);
+    while(c > 0)
+    {
+        yiren_write(file, buf, c);
+        c = yiren_read(src_file, buf, sizeof(buf) - 1);
+    }
+
+    yiren_close(file);
+    yiren_close(src_file);
+
+    return true;
+}
+
 bool yiren_mv(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path) {
     /* src文件所在的inode */
     bool exist;
