@@ -41,6 +41,7 @@ fs_off_t fs_lseek(int fd, fs_off_t off, int where);
 int fs_mkdir(const char* path);
 int fs_rmdir(const char* path);
 
+int fs_mv(const char* src_path, const char* new_path);
 int fs_link(const char* src_path, const char* new_path);
 int fs_unlink(const char* path);
 

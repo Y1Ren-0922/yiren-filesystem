@@ -209,6 +209,49 @@ bool yiren_rmdir(device_handle_t device, yiren_filesystem_t* fs, const char* pat
     }
 }
 
+bool yiren_mv(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path) {
+    /* src文件所在的inode */
+    bool exist;
+    inode_no_t no;
+    bool success = dir_roottree_locate(device, fs, src_path, &exist, &no);
+    if (!success || !exist) {
+        return false;
+    }
+
+    /* 引用计数加1 */
+    success = base_file_ref(device, &fs->sb, no);
+    if (!success) {
+        return false;
+    }
+
+    /* 创建硬链接 */
+    char dir_path[FS_MAX_FILE_PATH];
+    char name[FILE_MAX_NAME];
+    path_dirname(new_path, dir_path);
+    path_basename(new_path, name, FILE_MAX_NAME);
+
+    if (strlen(name) == 0) {
+        path_basename(src_path, name, FILE_MAX_NAME);
+    }
+
+    inode_no_t dir_no;
+    success = dir_roottree_locate(device, fs, dir_path, &exist, &dir_no);
+    if (!success || !exist) {
+        /* 这个要是失败了，很尴尬的事情 */
+        base_file_unref(device, &fs->sb, no);
+        return false;
+    }
+
+    success = dir_add(device, fs, dir_no, name, no);
+    if (!success) {
+        /* 这个要是失败了，很尴尬的事情 */
+        base_file_unref(device, &fs->sb, no);
+        return false;
+    }
+
+    return true;
+}
+
 bool yiren_link(device_handle_t device, yiren_filesystem_t* fs, const char* src_path, const char* new_path)
 {
     /* src文件所在的inode */

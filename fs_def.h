@@ -56,6 +56,7 @@ typedef fs_off_t (fs_lseek_f)(fs_file_t* file, fs_off_t off, int where);
 typedef bool (fs_mkdir_f)(device_handle_t device, fs_filesystem_t* fs, const char* path);
 typedef bool (fs_rmdir_f)(device_handle_t device, fs_filesystem_t* fs, const char* path);
 
+typedef bool (fs_mv_f)(device_handle_t device, fs_filesystem_t* fs, const char* src_path, const char* new_path);
 typedef bool (fs_link_f)(device_handle_t device, fs_filesystem_t* fs, const char* src_path, const char* new_path);
 typedef bool (fs_unlink_f)(device_handle_t device, fs_filesystem_t* fs, const char* path);
 
@@ -86,6 +87,7 @@ struct fs_operate_functions_s{
     fs_mkdir_f* mkdir;
     fs_rmdir_f* rmdir;
 
+    fs_mv_f* mv;
     fs_link_f* link;
     fs_unlink_f* unlink;
 
@@ -111,6 +113,7 @@ struct fs_operate_functions_s{
         (var).lseek = (fs_lseek_f*)type_name##_lseek;                   \
         (var).mkdir = (fs_mkdir_f*)type_name##_mkdir;                   \
         (var).rmdir = (fs_rmdir_f*)type_name##_rmdir;                   \
+        (var).mv = (fs_mv_f*)type_name##_mv;                            \
         (var).link = (fs_link_f*)type_name##_link;                      \
         (var).unlink = (fs_unlink_f*)type_name##_unlink;                \
         (var).symlink = (fs_symlink_f*)type_name##_symlink;             \

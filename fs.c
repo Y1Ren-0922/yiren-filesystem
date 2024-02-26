@@ -219,6 +219,29 @@ int fs_rmdir(const char* path)
     }
 }
 
+int fs_mv(const char* src_path, const char* new_path) {
+    char src_abspath[FS_MAX_FILE_PATH];
+    fs_abs_path(src_path, src_abspath, FS_MAX_FILE_PATH);
+
+    char new_abspath[FS_MAX_FILE_PATH];
+    fs_abs_path(new_path, new_abspath, FS_MAX_FILE_PATH);
+
+    if (!path_check(src_abspath) || !path_check(new_abspath)) {
+        return FS_ERROR;
+    }
+
+    if ((path_drive_letter(src_abspath)) != path_drive_letter(new_abspath)) {
+        return FS_ERROR;
+    }
+
+    struct dev_fsctrl_s* ctrl = path_to_ctrl(src_abspath);
+    if (ctrl->opfuncs->mv(ctrl->device, ctrl->fs_ctrl, path_remain(src_abspath), path_remain(new_abspath))) {
+        return FS_SUCCESS;
+    } else {
+        return FS_ERROR;
+    }
+}
+
 int fs_link(const char* src_path, const char* new_path)
 {
     char src_abspath[FS_MAX_FILE_PATH];

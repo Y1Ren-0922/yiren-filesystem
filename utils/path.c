@@ -34,6 +34,12 @@ void path_simplify(char* path)
         end = str_next(end, '/');
     }
 
+    if (path[strlen(path) - 1] == '.' && buf[strlen(buf) - 1] != '/') {
+        size_t buf_len = strlen(buf);
+        buf[buf_len] = '/';
+        buf[buf_len + 1] = '\0';
+    }
+
     strcpy(path, buf);
     ft_free(buf);
 }

@@ -394,7 +394,7 @@ int cmd_mv(int argc, char* argv[])
     if (argc == 2)
     {
         int isSuccessed;
-        isSuccessed = fs_link(argv[0],argv[1]);
+        isSuccessed = fs_mv(argv[0],argv[1]);
         if (isSuccessed == FS_ERROR)
         {
             printf("移动失败！\n");
