@@ -1,77 +1,11 @@
 #include "shell_command.h"
 
 #include <string.h>
+#include <ctype.h>
 #include "utils/path.h"
 #include "utils/sys.h"
-/*
-int cmd_pwd(int argc, char* argv[])
-{
-    char path[FS_MAX_FILE_PATH];
-    fs_getcwd(path, FS_MAX_FILE_PATH);
-    printf("%s\n", path);
-    return 0;
-}
-
-int cmd_cd(int argc, char* argv[])
-{
-    if (argc <= 0) {
-        printf("命令有误\n");
-        return -1;
-    }
-
-    if (fs_chdir(argv[0]) == FS_SUCCESS) {
-        return 0;
-    } else {
-        printf("改变失败，可能目录不存在\n");
-        return -1;
-    }
-
-}
-
-int cmd_ls(int argc, char* argv[])
-{
-    const char* path;
-    char wd[FS_MAX_FILE_PATH];
-    if (argc <= 0) {
-        fs_getcwd(wd, FS_MAX_FILE_PATH);
-        path = wd;
-    } else {
-        path = argv[0];
-    }
-
-    FS_DIR* dir = fs_opendir(path);
-    if (dir == NULL) {
-        printf("列出目录信息失败\n");
-    }
-
-    char name[32];
-    do {
-        fs_readdir(dir, name);
-        printf("%s ", name);
-    } while(name[0] != '\0');
-    printf("\n");
-
-    fs_closedir(dir);
-
-    return 0;
-}
-
-int cmd_mkdir(int argc, char* argv[])
-{
-    if (argc <= 0) {
-        printf("命令有误\n");
-        return -1;
-    }
-
-    if (fs_mkdir(argv[0]) == FS_SUCCESS) {
-        return 0;
-    } else {
-        printf("建立失败\n");
-        return -1;
-    }
-}
-
-*/
+#include "utils/path.h"
+#include "fs.h"
 
 static bool tree(char* path, int* p_level)
 {
@@ -364,6 +298,18 @@ int cmd_cp(int argc, char* argv[])
             printf("操作失败！\n");
             return 0;
         }
+
+        char abspath[FS_MAX_FILE_PATH];
+        fs_abs_path(argv[1], abspath, FS_MAX_FILE_PATH);
+
+        if (!(isalpha(abspath[0]) && abspath[1] == ':')) {
+            return FS_ERROR;
+        }
+
+        if (strlen(abspath + 3) == 0) {
+            path_basename(argv[0], abspath, FS_MAX_FILE_PATH);
+        }
+
         targetFile = fs_open(argv[1]);
         if (targetFile == FS_ERROR)
         {
